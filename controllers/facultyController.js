@@ -36,15 +36,22 @@ router.post('/faculties', (req, res) => {
 
 router.get('/faculties', (req, res) => {
 
+  let facultyList = [];
+
   Faculty.find().then((faculties) => {
+
+    if(faculties){
+      faculties.forEach((faculty) => {
+        facultyList.push({
+          self: `http://localhost:8090/api/faculties/${faculty._id}`,
+          id: `${faculty._id}`,
+          name: `${faculty.name}`
+        });
+      });
+    }
+
     return res.status(200).send({
-      faculties: [
-        {
-          self: `http://localhost:8090/api/faculties/${faculties[0].id}`,
-          id: `${faculties[0].id}`,
-          name: `${faculties[0].name}`
-        }
-      ]
+      faculties: facultyList
     });
   }).catch((err) => {});
 });

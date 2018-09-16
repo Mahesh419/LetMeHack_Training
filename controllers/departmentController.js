@@ -9,7 +9,7 @@ const bodyParser = require('body-parser');
 const router = express.Router();
 
 router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({extended : true}));
+//router.use(bodyParser.urlencoded({extended : true}));
 
 let faculty;
 
@@ -71,6 +71,48 @@ newFaculty(req).then((fac) => {
       }
     });
   }).catch((err) => {});
+
+});
+
+router.get('/departments', (req, res) => {
+  let faculty = req.query.faculty;
+  let responseList = [];
+  console.log(faculty);
+  if(faculty){
+    Department.find({faculty_id: faculty}).then((departmentList) => {
+      if(departmentList){
+        departmentList.forEach((dept) => {
+          responseList.push({
+            self: `http://localhost:8090/api/departments/${faculty}`,
+            id: `${dept._id}`,
+            name: `${dept.name}`
+          });
+        });
+
+        res.status(200).send({
+          departments: responseList
+        });
+      }
+    }).catch((err) => {
+      console.log('GET/departments', err);
+    });
+  }
+
+  Department.find().then((departmentList) => {
+
+    departmentList.forEach((dept) => {
+      responseList.push({
+        self: `http://localhost:8090/api/departments/${dept._id}`,
+        id: `${dept._id}`,
+        name: `${dept.name}`
+      });
+    });
+
+    res.status(200).send({
+      departments: responseList
+    });
+  });
+
 
 });
 
